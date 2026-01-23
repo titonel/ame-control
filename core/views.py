@@ -297,54 +297,98 @@ def cirurgia_upload_view(request):
             
             # Lê o arquivo CSV
             arquivo.seek(0)
-            decoded_file = arquivo.read().decode('utf-8')
+            decoded_file = arquivo.read().decode('utf-8-sig')  # utf-8-sig remove BOM automaticamente
             csv_file = io.StringIO(decoded_file)
-            reader = csv.DictReader(csv_file)
+            
+            # Detecta automaticamente o delimitador (vírgula ou ponto e vírgula)
+            sample = csv_file.read(1024)
+            csv_file.seek(0)
+            sniffer = csv.Sniffer()
+            try:
+                delimiter = sniffer.sniff(sample).delimiter
+            except:
+                delimiter = ';'  # Default para ponto e vírgula se não detectar
+            
+            reader = csv.DictReader(csv_file, delimiter=delimiter)
+            
+            # Normaliza os nomes das colunas (remove espaços extras)
+            if reader.fieldnames:
+                reader.fieldnames = [field.strip() for field in reader.fieldnames]
             
             # Mapeia variações de nomes de colunas
             def get_column(row, variations):
                 for var in variations:
+                    # Procura exatamente
                     if var in row:
-                        return row[var]
+                        value = row[var]
+                        # Remove espaços e ponto e vírgula final
+                        if value:
+                            return value.strip().rstrip(';')
                     # Tenta com espaços substituídos por underscore
                     var_underscore = var.replace(' ', '_')
                     if var_underscore in row:
-                        return row[var_underscore]
+                        value = row[var_underscore]
+                        if value:
+                            return value.strip().rstrip(';')
                 return None
             
             sucesso = 0
             erro = 0
             erros_detalhados = []
+            linhas_processadas = 0
             
             for i, row in enumerate(reader, start=2):  # Começa do 2 (header é linha 1)
                 try:
+                    # Pula linhas vazias
+                    if not any(row.values()):
+                        continue
+                    
+                    linhas_processadas += 1
+                    
                     codigo = get_column(row, ['Codigo SIGTAP', 'codigo_sigtap', 'codigo'])
                     descricao = get_column(row, ['Descricao', 'descricao'])
                     valor_str = get_column(row, ['Valor', 'valor'])
                     tipo = get_column(row, ['Tipo Cirurgia', 'tipo_cirurgia', 'tipo'])
                     especialidade = get_column(row, ['Especialidade', 'especialidade'])
                     
-                    if not all([codigo, descricao, valor_str, tipo, especialidade]):
-                        erros_detalhados.append(f"Linha {i}: Dados incompletos")
+                    # Valida dados obrigatórios
+                    if not codigo:
+                        erros_detalhados.append(f"Linha {i}: Código SIGTAP ausente")
                         erro += 1
                         continue
                     
-                    # Converte valor
-                    try:
-                        valor = Decimal(valor_str.replace(',', '.'))
-                    except:
-                        erros_detalhados.append(f"Linha {i}: Valor inválido '{valor_str}'")
+                    if not descricao:
+                        erros_detalhados.append(f"Linha {i}: Descrição ausente")
                         erro += 1
                         continue
                     
-                    # Mapeia tipo de cirurgia - NOVOS TIPOS
+                    if not tipo:
+                        erros_detalhados.append(f"Linha {i}: Tipo cirurgia ausente")
+                        erro += 1
+                        continue
+                    
+                    # Valor padrão 0 se não informado
+                    if not valor_str:
+                        valor = Decimal('0.00')
+                    else:
+                        try:
+                            valor = Decimal(valor_str.replace(',', '.'))
+                        except:
+                            erros_detalhados.append(f"Linha {i}: Valor inválido '{valor_str}'")
+                            erro += 1
+                            continue
+                    
+                    # Especialidade padrão se não informada
+                    if not especialidade:
+                        especialidade = 'Não especificada'
+                    
+                    # Mapeia tipo de cirurgia
                     tipo_stripped = tipo.strip()
                     if tipo_stripped.upper() == 'CMA':
                         tipo_cirurgia = 'CMA'
                     elif tipo_stripped.lower() == 'cma':
                         tipo_cirurgia = 'cma'
                     else:
-                        # Aceita qualquer variação mas padroniza
                         tipo_upper = tipo_stripped.upper()
                         if 'MAIOR' in tipo_upper or tipo_upper == 'CMA':
                             tipo_cirurgia = 'CMA'
@@ -373,10 +417,16 @@ def cirurgia_upload_view(request):
                     erro += 1
             
             # Mensagens de resultado
-            if sucesso > 0:
+            if linhas_processadas == 0:
+                messages.error(request, 'Arquivo CSV vazio ou sem dados válidos.')
+            elif sucesso > 0:
                 messages.success(request, f'{sucesso} cirurgia(s) importada(s) com sucesso!')
+            
             if erro > 0:
-                messages.warning(request, f'{erro} linha(s) com erro. Detalhes: {"; ".join(erros_detalhados[:5])}')
+                mensagem_erros = f'{erro} linha(s) com erro.'
+                if erros_detalhados:
+                    mensagem_erros += f' Primeiros erros: {"; ".join(erros_detalhados[:5])}'
+                messages.warning(request, mensagem_erros)
             
             return redirect('cirurgia_lista')
     else:
