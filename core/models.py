@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import EmailValidator, RegexValidator
-from decimal import Decimal
 
 
 class UsuarioManager(BaseUserManager):
@@ -36,7 +35,6 @@ class Usuario(AbstractUser):
         (5, 'Tier 5 - Gerente/Administrador'),
     ]
     
-    # O username será gerado automaticamente do email
     email = models.EmailField(
         'E-mail',
         unique=True,
@@ -95,7 +93,6 @@ class Usuario(AbstractUser):
         return f"{self.nome_completo} ({self.get_tier_display()})"
     
     def save(self, *args, **kwargs):
-        # Gera o username a partir do email se não foi definido
         if not self.username and self.email:
             self.username = self.email.split('@')[0]
         super().save(*args, **kwargs)
@@ -106,7 +103,7 @@ class Usuario(AbstractUser):
     
     def is_admin(self):
         """Verifica se o usuário é administrador (Tier 5)."""
-        return self.tier >= 5
+        return self.tier == 5
 
 
 class Empresa(models.Model):
@@ -125,7 +122,6 @@ class Empresa(models.Model):
         )]
     )
     
-    # Campos de endereço separados
     cep = models.CharField(
         'CEP',
         max_length=9,
@@ -239,8 +235,10 @@ class Medico(models.Model):
         return f"Dr(a). {self.nome_completo} - {self.crm}"
 
 
+# ===== MODELOS DA ÁREA ADMINISTRATIVA =====
+
 class Cirurgia(models.Model):
-    """Modelo para cadastro de cirurgias e procedimentos cirúrgicos."""
+    """Modelo para cadastro de cirurgias."""
     
     TIPO_CHOICES = [
         ('ELETIVA', 'Eletiva'),
@@ -253,10 +251,10 @@ class Cirurgia(models.Model):
         'Código SIGTAP',
         max_length=20,
         unique=True,
-        help_text='Código do procedimento na tabela SIGTAP'
+        help_text='Ex: 04.07.01.012-0'
     )
     
-    descricao = models.TextField('Descrição', help_text='Descrição completa do procedimento')
+    descricao = models.CharField('Descrição', max_length=500)
     
     valor = models.DecimalField(
         'Valor (R$)',
@@ -275,7 +273,7 @@ class Cirurgia(models.Model):
     especialidade = models.CharField(
         'Especialidade',
         max_length=100,
-        help_text='Especialidade médica responsável'
+        help_text='Ex: Ortopedia, Cardiologia, etc.'
     )
     
     ativa = models.BooleanField('Ativa', default=True)
@@ -293,15 +291,10 @@ class Cirurgia(models.Model):
     class Meta:
         verbose_name = 'Cirurgia'
         verbose_name_plural = 'Cirurgias'
-        ordering = ['descricao']
-        indexes = [
-            models.Index(fields=['codigo_sigtap']),
-            models.Index(fields=['especialidade']),
-            models.Index(fields=['tipo_cirurgia']),
-        ]
+        ordering = ['especialidade', 'descricao']
     
     def __str__(self):
-        return f"{self.codigo_sigtap} - {self.descricao[:50]}"
+        return f"{self.codigo_sigtap} - {self.descricao}"
 
 
 class Exame(models.Model):
@@ -310,20 +303,18 @@ class Exame(models.Model):
     TIPO_CHOICES = [
         ('LABORATORIAL', 'Laboratorial'),
         ('IMAGEM', 'Imagem'),
-        ('CARDIOLOGICO', 'Cardiológico'),
-        ('ENDOSCOPICO', 'Endoscópico'),
         ('FUNCIONAL', 'Funcional'),
-        ('OUTROS', 'Outros'),
+        ('PATOLOGIA', 'Patologia'),
     ]
     
     codigo_sigtap = models.CharField(
         'Código SIGTAP',
         max_length=20,
         unique=True,
-        help_text='Código do exame na tabela SIGTAP'
+        help_text='Ex: 02.02.03.004-0'
     )
     
-    descricao = models.TextField('Descrição', help_text='Descrição completa do exame')
+    descricao = models.CharField('Descrição', max_length=500)
     
     valor = models.DecimalField(
         'Valor (R$)',
@@ -342,7 +333,7 @@ class Exame(models.Model):
     preparo = models.TextField(
         'Preparo',
         blank=True,
-        help_text='Instruções de preparo para o exame'
+        help_text='Orientações de preparo para o exame'
     )
     
     ativo = models.BooleanField('Ativo', default=True)
@@ -360,35 +351,23 @@ class Exame(models.Model):
     class Meta:
         verbose_name = 'Exame'
         verbose_name_plural = 'Exames'
-        ordering = ['descricao']
-        indexes = [
-            models.Index(fields=['codigo_sigtap']),
-            models.Index(fields=['tipo_exame']),
-        ]
+        ordering = ['tipo_exame', 'descricao']
     
     def __str__(self):
-        return f"{self.codigo_sigtap} - {self.descricao[:50]}"
+        return f"{self.codigo_sigtap} - {self.descricao}"
 
 
 class ServicoMedico(models.Model):
     """Modelo para cadastro de serviços médicos."""
     
-    TIPO_CHOICES = [
-        ('CONSULTA', 'Consulta'),
-        ('RETORNO', 'Retorno'),
-        ('PROCEDIMENTO', 'Procedimento'),
-        ('TERAPIA', 'Terapia'),
-        ('ATENDIMENTO', 'Atendimento'),
-    ]
-    
     codigo_sigtap = models.CharField(
         'Código SIGTAP',
         max_length=20,
         unique=True,
-        help_text='Código do serviço na tabela SIGTAP'
+        help_text='Ex: 03.01.01.007-5'
     )
     
-    descricao = models.TextField('Descrição', help_text='Descrição completa do serviço')
+    descricao = models.CharField('Descrição', max_length=500)
     
     valor = models.DecimalField(
         'Valor (R$)',
@@ -397,23 +376,18 @@ class ServicoMedico(models.Model):
         help_text='Valor do serviço em reais'
     )
     
-    tipo_servico = models.CharField(
-        'Tipo de Serviço',
-        max_length=20,
-        choices=TIPO_CHOICES,
-        default='CONSULTA'
-    )
-    
     especialidade = models.CharField(
         'Especialidade',
         max_length=100,
-        help_text='Especialidade médica responsável'
+        blank=True,
+        help_text='Especialidade responsável pelo serviço'
     )
     
-    duracao_minutos = models.IntegerField(
-        'Duração (minutos)',
-        default=30,
-        help_text='Duração média do serviço em minutos'
+    duracao_estimada = models.IntegerField(
+        'Duração Estimada (minutos)',
+        blank=True,
+        null=True,
+        help_text='Tempo estimado do atendimento em minutos'
     )
     
     ativo = models.BooleanField('Ativo', default=True)
@@ -431,12 +405,7 @@ class ServicoMedico(models.Model):
     class Meta:
         verbose_name = 'Serviço Médico'
         verbose_name_plural = 'Serviços Médicos'
-        ordering = ['descricao']
-        indexes = [
-            models.Index(fields=['codigo_sigtap']),
-            models.Index(fields=['especialidade']),
-            models.Index(fields=['tipo_servico']),
-        ]
+        ordering = ['especialidade', 'descricao']
     
     def __str__(self):
-        return f"{self.codigo_sigtap} - {self.descricao[:50]}"
+        return f"{self.codigo_sigtap} - {self.descricao}"
