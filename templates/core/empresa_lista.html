@@ -25,6 +25,7 @@
                         <th>Razão Social</th>
                         <th>Nome Fantasia</th>
                         <th>CNPJ</th>
+                        <th>Cidade/Estado</th>
                         <th>Telefone</th>
                         <th>Status</th>
                         <th>Ações</th>
@@ -35,7 +36,14 @@
                     <tr>
                         <td><strong>{{ empresa.razao_social }}</strong></td>
                         <td>{{ empresa.nome_fantasia|default:"-" }}</td>
-                        <td>{{ empresa.cnpj }}</td>
+                        <td><small>{{ empresa.cnpj }}</small></td>
+                        <td>
+                            {% if empresa.cidade and empresa.estado %}
+                                <i class="bi bi-geo-alt"></i> {{ empresa.cidade }}/{{ empresa.estado }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
                         <td>{{ empresa.telefone|default:"-" }}</td>
                         <td>
                             {% if empresa.ativa %}
@@ -45,7 +53,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'empresa_editar' empresa.pk %}" class="btn btn-sm btn-primary">
+                            <a href="{% url 'empresa_editar' empresa.pk %}" class="btn btn-sm btn-primary" title="Editar">
                                 <i class="bi bi-pencil"></i>
                             </a>
                         </td>
