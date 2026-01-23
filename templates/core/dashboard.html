@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - AME Control{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>Bem-vindo(a), {{ user.nome_completo }}!</h2>
+        <p class="text-muted">Painel de Controle - {{ user.get_tier_display }}</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="dashboard-card">
+            <div class="icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <h3>{{ total_usuarios }}</h3>
+            <p>Usuários Cadastrados</p>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="dashboard-card">
+            <div class="icon">
+                <i class="bi bi-building"></i>
+            </div>
+            <h3>{{ total_empresas }}</h3>
+            <p>Empresas Ativas</p>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="dashboard-card">
+            <div class="icon">
+                <i class="bi bi-heart-pulse"></i>
+            </div>
+            <h3>{{ total_medicos }}</h3>
+            <p>Médicos Ativos</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Acesso Rápido</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'cadastro_menu' %}" class="btn btn-primary w-100">
+                            <i class="bi bi-person-plus"></i> Cadastros
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'empresa_lista' %}" class="btn btn-success w-100">
+                            <i class="bi bi-building"></i> Ver Empresas
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'medico_lista' %}" class="btn btn-info w-100">
+                            <i class="bi bi-heart-pulse"></i> Ver Médicos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
