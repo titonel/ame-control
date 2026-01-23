@@ -36,10 +36,17 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if '/cadastro' in request.path %}active{% endif %}" href="{% url 'cadastro_menu' %}">
+                            <a class="nav-link {% if '/cadastro' in request.path and '/admin' not in request.path %}active{% endif %}" href="{% url 'cadastro_menu' %}">
                                 <i class="bi bi-person-plus"></i> Cadastro
                             </a>
                         </li>
+                        {% if user.is_admin %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if '/admin/' in request.path %}active{% endif %}" href="{% url 'admin_menu' %}">
+                                <i class="bi bi-shield-lock"></i> Admin
+                            </a>
+                        </li>
+                        {% endif %}
                     </ul>
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item dropdown">
@@ -49,6 +56,10 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><span class="dropdown-item-text"><strong>{{ user.get_tier_display }}</strong></span></li>
                                 <li><hr class="dropdown-divider"></li>
+                                {% if user.is_admin %}
+                                <li><a class="dropdown-item" href="{% url 'admin_menu' %}"><i class="bi bi-shield-lock"></i> Área Admin</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                {% endif %}
                                 <li><a class="dropdown-item" href="{% url 'trocar_senha' %}"><i class="bi bi-key"></i> Trocar Senha</a></li>
                                 <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
                             </ul>
