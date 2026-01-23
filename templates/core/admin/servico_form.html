@@ -11,46 +11,11 @@
 </div>
 
 <div class="row">
-    <div class="col-lg-9">
+    <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.codigo_sigtap.id_for_label }}" class="form-label">
-                                    {{ form.codigo_sigtap.label }} <span class="text-danger">*</span>
-                                </label>
-                                {{ form.codigo_sigtap }}
-                                {% if form.codigo_sigtap.errors %}
-                                    <div class="text-danger mt-1"><small>{{ form.codigo_sigtap.errors }}</small></div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.especialidade.id_for_label }}" class="form-label">
-                                    {{ form.especialidade.label }}
-                                </label>
-                                {{ form.especialidade }}
-                                {% if form.especialidade.errors %}
-                                    <div class="text-danger mt-1"><small>{{ form.especialidade.errors }}</small></div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.descricao.id_for_label }}" class="form-label">
-                            {{ form.descricao.label }} <span class="text-danger">*</span>
-                        </label>
-                        {{ form.descricao }}
-                        {% if form.descricao.errors %}
-                            <div class="text-danger mt-1"><small>{{ form.descricao.errors }}</small></div>
-                        {% endif %}
-                    </div>
                     
                     <div class="row">
                         <div class="col-md-6">
@@ -61,6 +26,9 @@
                                 {{ form.valor }}
                                 {% if form.valor.errors %}
                                     <div class="text-danger mt-1"><small>{{ form.valor.errors }}</small></div>
+                                {% endif %}
+                                {% if form.valor.help_text %}
+                                    <small class="form-text text-muted d-block mt-1">{{ form.valor.help_text }}</small>
                                 {% endif %}
                             </div>
                         </div>
@@ -73,11 +41,27 @@
                                 {% if form.duracao_estimada.errors %}
                                     <div class="text-danger mt-1"><small>{{ form.duracao_estimada.errors }}</small></div>
                                 {% endif %}
+                                {% if form.duracao_estimada.help_text %}
+                                    <small class="form-text text-muted d-block mt-1">{{ form.duracao_estimada.help_text }}</small>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                     
                     <div class="mb-3">
+                        <label for="{{ form.especialidade.id_for_label }}" class="form-label">
+                            {{ form.especialidade.label }}
+                        </label>
+                        {{ form.especialidade }}
+                        {% if form.especialidade.errors %}
+                            <div class="text-danger mt-1"><small>{{ form.especialidade.errors }}</small></div>
+                        {% endif %}
+                        {% if form.especialidade.help_text %}
+                            <small class="form-text text-muted d-block mt-1">{{ form.especialidade.help_text }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
                         <div class="form-check form-switch">
                             {{ form.ativo }}
                             <label class="form-check-label" for="{{ form.ativo.id_for_label }}">
@@ -97,6 +81,38 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    
+    {# Sidebar com informações #}
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Informações</h6>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-3">
+                    <i class="bi bi-lightbulb"></i> Cadastre os serviços médicos oferecidos pela instituição.
+                </p>
+                
+                <hr>
+                
+                <h6 class="small mb-2"><strong>Campos:</strong></h6>
+                <ul class="small mb-0">
+                    <li class="mb-2">
+                        <strong>Valor Unitário:</strong> Valor cobrado por atendimento/procedimento
+                    </li>
+                    <li class="mb-2">
+                        <strong>Duração Estimada:</strong> Tempo médio em minutos (opcional)
+                    </li>
+                    <li class="mb-2">
+                        <strong>Especialidade:</strong> Área médica responsável (opcional)
+                    </li>
+                    <li>
+                        <strong>Ativo:</strong> Indica se o serviço está disponível
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
