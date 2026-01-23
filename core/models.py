@@ -120,7 +120,31 @@ class Empresa(models.Model):
         )]
     )
     
-    endereco = models.TextField('Endereço', blank=True)
+    # Campos de endereço separados
+    cep = models.CharField(
+        'CEP',
+        max_length=9,
+        blank=True,
+        validators=[RegexValidator(
+            regex=r'^\d{5}-\d{3}$',
+            message='CEP deve estar no formato: 00000-000'
+        )]
+    )
+    logradouro = models.CharField('Logradouro', max_length=255, blank=True, help_text='Rua, Avenida, etc.')
+    numero = models.CharField('Número', max_length=10, blank=True)
+    complemento = models.CharField('Complemento', max_length=100, blank=True, help_text='Apto, Sala, Bloco, etc.')
+    bairro = models.CharField('Bairro', max_length=100, blank=True)
+    cidade = models.CharField('Cidade', max_length=100, blank=True)
+    estado = models.CharField(
+        'Estado',
+        max_length=2,
+        blank=True,
+        validators=[RegexValidator(
+            regex=r'^[A-Z]{2}$',
+            message='Estado deve ser a sigla com 2 letras maiúsculas (ex: SP)'
+        )]
+    )
+    
     telefone = models.CharField('Telefone', max_length=20, blank=True)
     email = models.EmailField('E-mail', blank=True)
     
@@ -143,6 +167,24 @@ class Empresa(models.Model):
     
     def __str__(self):
         return self.nome_fantasia or self.razao_social
+    
+    @property
+    def endereco_completo(self):
+        """Retorna o endereço completo formatado."""
+        partes = []
+        if self.logradouro:
+            partes.append(self.logradouro)
+        if self.numero:
+            partes.append(f"nº {self.numero}")
+        if self.complemento:
+            partes.append(self.complemento)
+        if self.bairro:
+            partes.append(f"- {self.bairro}")
+        if self.cidade and self.estado:
+            partes.append(f"- {self.cidade}/{self.estado}")
+        if self.cep:
+            partes.append(f"- CEP: {self.cep}")
+        return ' '.join(partes) if partes else 'Endereço não informado'
 
 
 class Medico(models.Model):
