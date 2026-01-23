@@ -105,17 +105,127 @@
                         <h6 class="text-primary mb-3">
                             <i class="bi bi-geo-alt"></i> Endereço
                         </h6>
-                        <div class="mb-3">
-                            <label for="{{ form.endereco.id_for_label }}" class="form-label">
-                                <i class="bi bi-map"></i> {{ form.endereco.label }}
-                            </label>
-                            {{ form.endereco }}
-                            {% if form.endereco.errors %}
-                                <div class="text-danger mt-1">
-                                    <small><i class="bi bi-exclamation-circle"></i> {{ form.endereco.errors }}</small>
+                        
+                        {# CEP com botão de busca #}
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.cep.id_for_label }}" class="form-label">
+                                        <i class="bi bi-mailbox"></i> {{ form.cep.label }}
+                                    </label>
+                                    <div class="input-group">
+                                        {{ form.cep }}
+                                        <button class="btn btn-outline-primary" type="button" id="buscarCepBtn">
+                                            <i class="bi bi-search"></i> Buscar
+                                        </button>
+                                    </div>
+                                    {% if form.cep.errors %}
+                                        <div class="text-danger mt-1">
+                                            <small><i class="bi bi-exclamation-circle"></i> {{ form.cep.errors }}</small>
+                                        </div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">Digite o CEP e clique em Buscar</small>
+                                    <div id="cep-loading" class="text-primary mt-1" style="display: none;">
+                                        <small><i class="bi bi-hourglass-split"></i> Buscando endereço...</small>
+                                    </div>
+                                    <div id="cep-error" class="text-danger mt-1" style="display: none;">
+                                        <small><i class="bi bi-exclamation-triangle"></i> <span id="cep-error-msg"></span></small>
+                                    </div>
+                                    <div id="cep-success" class="text-success mt-1" style="display: none;">
+                                        <small><i class="bi bi-check-circle"></i> Endereço encontrado!</small>
+                                    </div>
                                 </div>
-                            {% endif %}
-                            <small class="form-text text-muted">Endereço completo: Rua, Número, Complemento, Bairro, Cidade - Estado, CEP</small>
+                            </div>
+                        </div>
+                        
+                        {# Logradouro e Número #}
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="{{ form.logradouro.id_for_label }}" class="form-label">
+                                        <i class="bi bi-signpost"></i> {{ form.logradouro.label }}
+                                    </label>
+                                    {{ form.logradouro }}
+                                    {% if form.logradouro.errors %}
+                                        <div class="text-danger mt-1">
+                                            <small><i class="bi bi-exclamation-circle"></i> {{ form.logradouro.errors }}</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.numero.id_for_label }}" class="form-label">
+                                        <i class="bi bi-hash"></i> {{ form.numero.label }}
+                                    </label>
+                                    {{ form.numero }}
+                                    {% if form.numero.errors %}
+                                        <div class="text-danger mt-1">
+                                            <small><i class="bi bi-exclamation-circle"></i> {{ form.numero.errors }}</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {# Complemento e Bairro #}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.complemento.id_for_label }}" class="form-label">
+                                        <i class="bi bi-building"></i> {{ form.complemento.label }}
+                                    </label>
+                                    {{ form.complemento }}
+                                    {% if form.complemento.errors %}
+                                        <div class="text-danger mt-1">
+                                            <small><i class="bi bi-exclamation-circle"></i> {{ form.complemento.errors }}</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.bairro.id_for_label }}" class="form-label">
+                                        <i class="bi bi-map"></i> {{ form.bairro.label }}
+                                    </label>
+                                    {{ form.bairro }}
+                                    {% if form.bairro.errors %}
+                                        <div class="text-danger mt-1">
+                                            <small><i class="bi bi-exclamation-circle"></i> {{ form.bairro.errors }}</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {# Cidade e Estado #}
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="{{ form.cidade.id_for_label }}" class="form-label">
+                                        <i class="bi bi-pin-map"></i> {{ form.cidade.label }}
+                                    </label>
+                                    {{ form.cidade }}
+                                    {% if form.cidade.errors %}
+                                        <div class="text-danger mt-1">
+                                            <small><i class="bi bi-exclamation-circle"></i> {{ form.cidade.errors }}</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.estado.id_for_label }}" class="form-label">
+                                        <i class="bi bi-flag"></i> {{ form.estado.label }}
+                                    </label>
+                                    {{ form.estado }}
+                                    {% if form.estado.errors %}
+                                        <div class="text-danger mt-1">
+                                            <small><i class="bi bi-exclamation-circle"></i> {{ form.estado.errors }}</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -182,8 +292,8 @@
                     </small>
                     <ul class="list-unstyled small text-muted">
                         <li class="mb-2"><i class="bi bi-dot"></i> O CNPJ deve ser único no sistema</li>
-                        <li class="mb-2"><i class="bi bi-dot"></i> Nome Fantasia é opcional mas recomendado</li>
-                        <li class="mb-2"><i class="bi bi-dot"></i> Empresas inativas podem ser reativadas posteriormente</li>
+                        <li class="mb-2"><i class="bi bi-dot"></i> Digite o CEP e clique em "Buscar" para preencher automaticamente</li>
+                        <li class="mb-2"><i class="bi bi-dot"></i> Você pode corrigir os dados após a busca</li>
                     </ul>
                 </div>
             </div>
@@ -191,11 +301,11 @@
         
         <div class="card">
             <div class="card-header">
-                <h6 class="mb-0"><i class="bi bi-shield-check"></i> Segurança</h6>
+                <h6 class="mb-0"><i class="bi bi-search"></i> Busca de CEP</h6>
             </div>
             <div class="card-body">
                 <small class="text-muted">
-                    <i class="bi bi-lock"></i> Todos os dados são armazenados de forma segura e criptografada.
+                    <i class="bi bi-globe"></i> Sistema integrado com a API ViaCEP para busca automática de endereços.
                 </small>
             </div>
         </div>
@@ -231,15 +341,122 @@
     color: var(--secondary-color);
     margin-right: 0.25rem;
 }
+
+#buscarCepBtn:hover {
+    transform: scale(1.05);
+    transition: all 0.2s ease;
+}
 </style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Validação de formulário
+// Busca de CEP via API ViaCEP
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('empresaForm');
+    const cepField = document.getElementById('cep_field');
+    const buscarBtn = document.getElementById('buscarCepBtn');
+    const loading = document.getElementById('cep-loading');
+    const error = document.getElementById('cep-error');
+    const success = document.getElementById('cep-success');
+    const errorMsg = document.getElementById('cep-error-msg');
     
+    // Campos de endereço
+    const logradouroField = document.getElementById('logradouro_field');
+    const bairroField = document.getElementById('bairro_field');
+    const cidadeField = document.getElementById('cidade_field');
+    const estadoField = document.getElementById('estado_field');
+    const numeroField = document.getElementById('numero_field');
+    
+    function limparMensagens() {
+        loading.style.display = 'none';
+        error.style.display = 'none';
+        success.style.display = 'none';
+    }
+    
+    function buscarCEP() {
+        const cep = cepField.value.replace(/\D/g, '');
+        
+        if (cep.length !== 8) {
+            limparMensagens();
+            error.style.display = 'block';
+            errorMsg.textContent = 'CEP inválido. Digite 8 dígitos.';
+            return;
+        }
+        
+        limparMensagens();
+        loading.style.display = 'block';
+        buscarBtn.disabled = true;
+        
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
+            .then(response => response.json())
+            .then(data => {
+                limparMensagens();
+                buscarBtn.disabled = false;
+                
+                if (data.erro) {
+                    error.style.display = 'block';
+                    errorMsg.textContent = 'CEP não encontrado.';
+                    return;
+                }
+                
+                // Preenche os campos
+                logradouroField.value = data.logradouro || '';
+                bairroField.value = data.bairro || '';
+                cidadeField.value = data.localidade || '';
+                estadoField.value = data.uf || '';
+                
+                success.style.display = 'block';
+                
+                // Foca no campo número para o usuário continuar
+                numeroField.focus();
+                
+                // Esconde mensagem de sucesso após 3 segundos
+                setTimeout(() => {
+                    success.style.display = 'none';
+                }, 3000);
+            })
+            .catch(err => {
+                limparMensagens();
+                buscarBtn.disabled = false;
+                error.style.display = 'block';
+                errorMsg.textContent = 'Erro ao buscar CEP. Tente novamente.';
+                console.error('Erro:', err);
+            });
+    }
+    
+    // Event listeners
+    if (buscarBtn) {
+        buscarBtn.addEventListener('click', buscarCEP);
+    }
+    
+    if (cepField) {
+        // Busca ao pressionar Enter
+        cepField.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarCEP();
+            }
+        });
+        
+        // Formata o CEP enquanto digita
+        cepField.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 5) {
+                value = value.substring(0, 5) + '-' + value.substring(5, 8);
+            }
+            e.target.value = value;
+        });
+    }
+    
+    // Força estado em maiúsculas
+    if (estadoField) {
+        estadoField.addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+    }
+    
+    // Validação do formulário
+    const form = document.getElementById('empresaForm');
     if (form) {
         form.addEventListener('submit', function(e) {
             const razaoSocial = document.querySelector('input[name="razao_social"]');
