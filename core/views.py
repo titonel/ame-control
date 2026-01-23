@@ -337,16 +337,23 @@ def cirurgia_upload_view(request):
                         erro += 1
                         continue
                     
-                    # Mapeia tipo de cirurgia
-                    tipo_map = {
-                        'ELETIVA': 'ELETIVA',
-                        'URGENCIA': 'URGENCIA',
-                        'URGÊNCIA': 'URGENCIA',
-                        'EMERGENCIA': 'EMERGENCIA',
-                        'EMERGÊNCIA': 'EMERGENCIA',
-                        'AMBULATORIAL': 'AMBULATORIAL',
-                    }
-                    tipo_cirurgia = tipo_map.get(tipo.upper().strip(), 'ELETIVA')
+                    # Mapeia tipo de cirurgia - NOVOS TIPOS
+                    tipo_stripped = tipo.strip()
+                    if tipo_stripped.upper() == 'CMA':
+                        tipo_cirurgia = 'CMA'
+                    elif tipo_stripped.lower() == 'cma':
+                        tipo_cirurgia = 'cma'
+                    else:
+                        # Aceita qualquer variação mas padroniza
+                        tipo_upper = tipo_stripped.upper()
+                        if 'MAIOR' in tipo_upper or tipo_upper == 'CMA':
+                            tipo_cirurgia = 'CMA'
+                        elif 'MENOR' in tipo_upper:
+                            tipo_cirurgia = 'cma'
+                        else:
+                            erros_detalhados.append(f"Linha {i}: Tipo inválido '{tipo}'. Use 'CMA' ou 'cma'")
+                            erro += 1
+                            continue
                     
                     # Cria ou atualiza cirurgia
                     cirurgia, created = Cirurgia.objects.update_or_create(
