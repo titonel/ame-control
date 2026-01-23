@@ -323,16 +323,8 @@ class ServicoMedicoForm(forms.ModelForm):
     
     class Meta:
         model = ServicoMedico
-        fields = ['codigo_sigtap', 'descricao', 'valor', 'especialidade', 'duracao_estimada', 'ativo']
+        fields = ['valor', 'especialidade', 'duracao_estimada', 'ativo']
         widgets = {
-            'codigo_sigtap': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ex: 03.01.01.007-5'
-            }),
-            'descricao': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 3
-            }),
             'valor': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'step': '0.01',
