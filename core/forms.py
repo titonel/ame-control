@@ -245,31 +245,44 @@ class CirurgiaUploadForm(forms.Form):
         if not arquivo.name.endswith('.csv'):
             raise ValidationError('O arquivo deve estar no formato CSV.')
         
-        # Verifica se o arquivo é UTF-8
+        # Verifica se o arquivo é UTF-8 (aceita BOM)
         try:
             arquivo.seek(0)
-            content = arquivo.read().decode('utf-8')
+            content = arquivo.read().decode('utf-8-sig')  # utf-8-sig remove BOM
             arquivo.seek(0)
         except UnicodeDecodeError:
             raise ValidationError('O arquivo deve estar codificado em UTF-8.')
         
         # Valida as colunas
         arquivo.seek(0)
-        content_str = arquivo.read().decode('utf-8')
+        content_str = arquivo.read().decode('utf-8-sig')
         csv_file = io.StringIO(content_str)
-        reader = csv.DictReader(csv_file)
+        
+        # Detecta delimitador
+        sample = csv_file.read(1024)
+        csv_file.seek(0)
+        sniffer = csv.Sniffer()
+        try:
+            delimiter = sniffer.sniff(sample).delimiter
+        except:
+            delimiter = ';'  # Default para ponto e vírgula
+        
+        reader = csv.DictReader(csv_file, delimiter=delimiter)
         
         required_columns = ['Codigo SIGTAP', 'Descricao', 'Valor', 'Tipo Cirurgia', 'Especialidade']
         
         if not reader.fieldnames:
             raise ValidationError('O arquivo CSV está vazio ou mal formatado.')
         
+        # Normaliza fieldnames (remove espaços extras)
+        fieldnames_normalized = [f.strip() for f in reader.fieldnames]
+        fieldnames_lower = [f.lower() for f in fieldnames_normalized]
+        
         # Aceita variações nos nomes das colunas
-        fieldnames_lower = [f.lower().strip() for f in reader.fieldnames]
         for col in required_columns:
             col_variations = [col.lower(), col.lower().replace(' ', '_')]
             if not any(variation in fieldnames_lower for variation in col_variations):
-                raise ValidationError(f'Coluna obrigatória ausente: {col}')
+                raise ValidationError(f'Coluna obrigatória ausente: {col}. Colunas encontradas: {", ".join(fieldnames_normalized)}')
         
         arquivo.seek(0)
         return arquivo
