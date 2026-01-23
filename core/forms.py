@@ -112,7 +112,11 @@ class EmpresaForm(forms.ModelForm):
     
     class Meta:
         model = Empresa
-        fields = ['razao_social', 'nome_fantasia', 'cnpj', 'endereco', 'telefone', 'email', 'ativa']
+        fields = [
+            'razao_social', 'nome_fantasia', 'cnpj',
+            'cep', 'logradouro', 'numero', 'complemento', 'bairro', 'cidade', 'estado',
+            'telefone', 'email', 'ativa'
+        ]
         widgets = {
             'razao_social': forms.TextInput(attrs={'class': 'form-control'}),
             'nome_fantasia': forms.TextInput(attrs={'class': 'form-control'}),
@@ -120,7 +124,43 @@ class EmpresaForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': '00.000.000/0000-00'
             }),
-            'endereco': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'cep': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '00000-000',
+                'id': 'cep_field'
+            }),
+            'logradouro': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'logradouro_field',
+                'placeholder': 'Rua, Avenida, etc.'
+            }),
+            'numero': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'numero_field',
+                'placeholder': 'Número'
+            }),
+            'complemento': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'complemento_field',
+                'placeholder': 'Apto, Sala, Bloco, etc.'
+            }),
+            'bairro': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'bairro_field',
+                'placeholder': 'Bairro'
+            }),
+            'cidade': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'cidade_field',
+                'placeholder': 'Cidade'
+            }),
+            'estado': forms.TextInput(attrs={
+                'class': 'form-control',
+                'id': 'estado_field',
+                'placeholder': 'UF (ex: SP)',
+                'maxlength': '2',
+                'style': 'text-transform: uppercase;'
+            }),
             'telefone': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'ativa': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
