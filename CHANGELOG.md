@@ -1,5 +1,74 @@
 # Histórico de Alterações - AME Control
 
+## [2026-01-23] - Busca Automática de CEP
+
+### Adicionado
+- **Busca de CEP via API ViaCEP**: Sistema integrado para buscar endereços automaticamente
+- **Campos de endereço separados**: CEP, Logradouro, Número, Complemento, Bairro, Cidade e Estado
+- **Preenchimento automático**: Ao digitar o CEP e clicar em "Buscar", os campos são preenchidos automaticamente
+- **Validação de CEP**: Formato automático (00000-000) enquanto o usuário digita
+- **Feedback visual**: Mensagens de loading, erro e sucesso durante a busca
+
+### Alterado
+- **Modelo Empresa**: Campo `endereco` TextField substituído por campos individuais
+- **Formulário de Empresa**: Layout reorganizado com seção de endereço dedicada
+- **Listagem de Empresas**: Exibe Cidade/Estado ao invés do endereço completo
+
+### Como Usar
+
+1. **Acesse o cadastro de empresa**: Menu Cadastro > Empresas > Nova Empresa
+2. **Digite o CEP** no campo apropriado (formato: 00000-000)
+3. **Clique no botão "Buscar"** ao lado do campo CEP
+4. **Aguarde**: O sistema buscará o endereço na API ViaCEP
+5. **Revise e complete**: Os campos serão preenchidos automaticamente, você só precisa adicionar o número e complemento (se houver)
+
+### Como Atualizar
+
+Se você já tem o sistema instalado, execute:
+
+```bash
+# 1. Atualize o código
+git pull origin main
+
+# 2. Aplique as migrações
+python manage.py migrate
+
+# 3. Reinicie o servidor
+python manage.py runserver
+```
+
+Você verá esta saída ao executar as migrações:
+```
+Running migrations:
+  Applying core.0003_empresa_endereco_campos... OK
+```
+
+### Detalhes Técnicos
+
+#### Campos de Endereço
+- **CEP**: Máximo 9 caracteres (formato: 00000-000)
+- **Logradouro**: Até 255 caracteres (Rua, Avenida, etc.)
+- **Número**: Até 10 caracteres
+- **Complemento**: Até 100 caracteres (Apto, Sala, Bloco, etc.)
+- **Bairro**: Até 100 caracteres
+- **Cidade**: Até 100 caracteres
+- **Estado**: 2 caracteres maiúsculos (ex: SP, RJ, MG)
+
+#### API ViaCEP
+- **Endpoint**: `https://viacep.com.br/ws/{cep}/json/`
+- **Método**: GET
+- **Formato**: JSON
+- **Sem autenticação**: API pública e gratuita
+
+#### JavaScript
+- **Busca assíncrona**: Usa Fetch API moderna
+- **Formatação automática**: CEP é formatado enquanto digita
+- **Validação**: Verifica se o CEP tem 8 dígitos antes de buscar
+- **Feedback**: Mensagens visuais de loading, erro e sucesso
+- **Foco automático**: Após buscar, o cursor vai para o campo "Número"
+
+---
+
 ## [2026-01-23] - Melhorias no Cadastro de Usuários
 
 ### Alterado
