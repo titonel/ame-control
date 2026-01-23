@@ -6,109 +6,260 @@
 <div class="row mb-4">
     <div class="col-12">
         <h2><i class="bi bi-building"></i> {{ acao }} Empresa</h2>
+        <p class="text-muted">Preencha os dados da empresa abaixo</p>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-10 mx-auto">
+    <div class="col-lg-9">
         <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> Dados da Empresa</h5>
+            </div>
             <div class="card-body">
-                <form method="post">
+                <form method="post" id="empresaForm">
                     {% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.razao_social.id_for_label }}" class="form-label">
-                                    {{ form.razao_social.label }}
-                                    <span class="text-danger">*</span>
-                                </label>
-                                {{ form.razao_social }}
-                                {% if form.razao_social.errors %}
-                                    <div class="text-danger mt-1">{{ form.razao_social.errors }}</div>
-                                {% endif %}
+                    
+                    {# Seção: Identificação #}
+                    <div class="form-section mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="bi bi-building"></i> Identificação
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.razao_social.id_for_label }}" class="form-label">
+                                        <i class="bi bi-card-text"></i> {{ form.razao_social.label }}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.razao_social }}
+                                    {% if form.razao_social.errors %}
+                                        <div class="text-danger mt-1">
+                                            <small><i class="bi bi-exclamation-circle"></i> {{ form.razao_social.errors }}</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.nome_fantasia.id_for_label }}" class="form-label">
+                                        <i class="bi bi-tag"></i> {{ form.nome_fantasia.label }}
+                                    </label>
+                                    {{ form.nome_fantasia }}
+                                    {% if form.nome_fantasia.errors %}
+                                        <div class="text-danger mt-1">
+                                            <small><i class="bi bi-exclamation-circle"></i> {{ form.nome_fantasia.errors }}</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="{{ form.nome_fantasia.id_for_label }}" class="form-label">
-                                    {{ form.nome_fantasia.label }}
-                                </label>
-                                {{ form.nome_fantasia }}
-                                {% if form.nome_fantasia.errors %}
-                                    <div class="text-danger mt-1">{{ form.nome_fantasia.errors }}</div>
-                                {% endif %}
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.cnpj.id_for_label }}" class="form-label">
+                                        <i class="bi bi-file-earmark-binary"></i> {{ form.cnpj.label }}
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.cnpj }}
+                                    {% if form.cnpj.errors %}
+                                        <div class="text-danger mt-1">
+                                            <small><i class="bi bi-exclamation-circle"></i> {{ form.cnpj.errors }}</small>
+                                        </div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">Formato: 00.000.000/0000-00</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.telefone.id_for_label }}" class="form-label">
+                                        <i class="bi bi-telephone"></i> {{ form.telefone.label }}
+                                    </label>
+                                    {{ form.telefone }}
+                                    {% if form.telefone.errors %}
+                                        <div class="text-danger mt-1">
+                                            <small><i class="bi bi-exclamation-circle"></i> {{ form.telefone.errors }}</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">
+                                        <i class="bi bi-envelope"></i> {{ form.email.label }}
+                                    </label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger mt-1">
+                                            <small><i class="bi bi-exclamation-circle"></i> {{ form.email.errors }}</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="{{ form.cnpj.id_for_label }}" class="form-label">
-                                    {{ form.cnpj.label }}
-                                    <span class="text-danger">*</span>
-                                </label>
-                                {{ form.cnpj }}
-                                {% if form.cnpj.errors %}
-                                    <div class="text-danger mt-1">{{ form.cnpj.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="{{ form.telefone.id_for_label }}" class="form-label">
-                                    {{ form.telefone.label }}
-                                </label>
-                                {{ form.telefone }}
-                                {% if form.telefone.errors %}
-                                    <div class="text-danger mt-1">{{ form.telefone.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="{{ form.email.id_for_label }}" class="form-label">
-                                    {{ form.email.label }}
-                                </label>
-                                {{ form.email }}
-                                {% if form.email.errors %}
-                                    <div class="text-danger mt-1">{{ form.email.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.endereco.id_for_label }}" class="form-label">
-                            {{ form.endereco.label }}
-                        </label>
-                        {{ form.endereco }}
-                        {% if form.endereco.errors %}
-                            <div class="text-danger mt-1">{{ form.endereco.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <div class="form-check">
-                            {{ form.ativa }}
-                            <label class="form-check-label" for="{{ form.ativa.id_for_label }}">
-                                {{ form.ativa.label }}
+                    {# Seção: Endereço #}
+                    <div class="form-section mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="bi bi-geo-alt"></i> Endereço
+                        </h6>
+                        <div class="mb-3">
+                            <label for="{{ form.endereco.id_for_label }}" class="form-label">
+                                <i class="bi bi-map"></i> {{ form.endereco.label }}
                             </label>
+                            {{ form.endereco }}
+                            {% if form.endereco.errors %}
+                                <div class="text-danger mt-1">
+                                    <small><i class="bi bi-exclamation-circle"></i> {{ form.endereco.errors }}</small>
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Endereço completo: Rua, Número, Complemento, Bairro, Cidade - Estado, CEP</small>
                         </div>
                     </div>
                     
-                    <hr>
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    {# Seção: Status #}
+                    <div class="form-section mb-4">
+                        <h6 class="text-primary mb-3">
+                            <i class="bi bi-toggle-on"></i> Status
+                        </h6>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                {{ form.ativa }}
+                                <label class="form-check-label" for="{{ form.ativa.id_for_label }}">
+                                    <strong>{{ form.ativa.label }}</strong>
+                                    <br>
+                                    <small class="text-muted">Empresas inativas não aparecerão nas listagens principais</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    {# Botões de Ação #}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
                         <a href="{% url 'empresa_lista' %}" class="btn btn-secondary">
-                            <i class="bi bi-x-circle"></i> Cancelar
+                            <i class="bi bi-arrow-left"></i> Voltar
                         </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-circle"></i> Salvar
-                        </button>
+                        <div>
+                            <button type="reset" class="btn btn-outline-secondary me-2">
+                                <i class="bi bi-x-circle"></i> Limpar
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Salvar Empresa
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+    
+    {# Sidebar com informações #}
+    <div class="col-lg-3">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Informações</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted d-block mb-2">
+                        <i class="bi bi-asterisk text-danger"></i> <strong>Campos Obrigatórios</strong>
+                    </small>
+                    <ul class="list-unstyled small">
+                        <li><i class="bi bi-check2 text-success"></i> Razão Social</li>
+                        <li><i class="bi bi-check2 text-success"></i> CNPJ</li>
+                    </ul>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <small class="text-muted d-block mb-2">
+                        <i class="bi bi-lightbulb"></i> <strong>Dicas</strong>
+                    </small>
+                    <ul class="list-unstyled small text-muted">
+                        <li class="mb-2"><i class="bi bi-dot"></i> O CNPJ deve ser único no sistema</li>
+                        <li class="mb-2"><i class="bi bi-dot"></i> Nome Fantasia é opcional mas recomendado</li>
+                        <li class="mb-2"><i class="bi bi-dot"></i> Empresas inativas podem ser reativadas posteriormente</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-shield-check"></i> Segurança</h6>
+            </div>
+            <div class="card-body">
+                <small class="text-muted">
+                    <i class="bi bi-lock"></i> Todos os dados são armazenados de forma segura e criptografada.
+                </small>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-section {
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.form-section h6 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.form-check-input:checked {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.card-header h6 {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.form-label i {
+    color: var(--secondary-color);
+    margin-right: 0.25rem;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Validação de formulário
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('empresaForm');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const razaoSocial = document.querySelector('input[name="razao_social"]');
+            const cnpj = document.querySelector('input[name="cnpj"]');
+            
+            if (!razaoSocial.value.trim()) {
+                e.preventDefault();
+                alert('⚠️ Por favor, preencha a Razão Social.');
+                razaoSocial.focus();
+                return false;
+            }
+            
+            if (!cnpj.value.trim()) {
+                e.preventDefault();
+                alert('⚠️ Por favor, preencha o CNPJ.');
+                cnpj.focus();
+                return false;
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
