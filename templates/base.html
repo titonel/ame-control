@@ -36,13 +36,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% if '/cadastro' in request.path and '/admin' not in request.path %}active{% endif %}" href="{% url 'cadastro_menu' %}">
+                            <a class="nav-link {% if '/cadastro' in request.path %}active{% endif %}" href="{% url 'cadastro_menu' %}">
                                 <i class="bi bi-person-plus"></i> Cadastro
                             </a>
                         </li>
                         {% if user.is_admin %}
                         <li class="nav-item">
-                            <a class="nav-link {% if '/admin/' in request.path %}active{% endif %}" href="{% url 'admin_menu' %}">
+                            <a class="nav-link {% if '/config/' in request.path %}active{% endif %}" href="{% url 'admin_menu' %}">
                                 <i class="bi bi-gear"></i> Configurações
                             </a>
                         </li>
