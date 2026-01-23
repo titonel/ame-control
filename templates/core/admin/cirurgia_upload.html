@@ -26,10 +26,15 @@
                         <ul class="mb-0">
                             <li><code>Codigo SIGTAP</code> - Código do procedimento</li>
                             <li><code>Descricao</code> - Descrição do procedimento</li>
-                            <li><code>Valor</code> - Valor em reais (usar ponto como separador decimal)</li>
+                            <li><code>Valor</code> - Valor em reais (pode ficar vazio, padrão: 0,00)</li>
                             <li><code>Tipo Cirurgia</code> - <strong>CMA</strong> (Cirurgias Maiores) ou <strong>cma</strong> (Cirurgias menores)</li>
-                            <li><code>Especialidade</code> - Nome da especialidade</li>
+                            <li><code>Especialidade</code> - Nome da especialidade (pode ficar vazio)</li>
                         </ul>
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="bi bi-check-circle"></i> Aceita vírgula (,) ou ponto e vírgula (;) como separador
+                            </small>
+                        </div>
                     </div>
                     
                     <div class="mb-3">
@@ -52,7 +57,9 @@
                         <i class="bi bi-exclamation-triangle"></i> <strong>Importante:</strong>
                         <ul class="mb-0 mt-2">
                             <li>O arquivo deve estar codificado em <strong>UTF-8</strong></li>
-                            <li>Tipos válidos: <strong>CMA</strong> ou <strong>cma</strong></li>
+                            <li>Delimitadores aceitos: <strong>vírgula (,)</strong> ou <strong>ponto e vírgula (;)</strong></li>
+                            <li>Tipos válidos: <strong>CMA</strong> (maiúsculas) ou <strong>cma</strong> (minúsculas)</li>
+                            <li>Valores vazios recebem padrão: Valor = 0,00 / Especialidade = "Não especificada"</li>
                             <li>Cirurgias com código SIGTAP já existentes serão <strong>atualizadas</strong></li>
                             <li>Linhas com erros serão ignoradas e reportadas ao final</li>
                         </ul>
@@ -77,19 +84,33 @@
     <div class="col-lg-4">
         <div class="card">
             <div class="card-header">
-                <h6 class="mb-0"><i class="bi bi-file-earmark-code"></i> Exemplo de CSV</h6>
+                <h6 class="mb-0"><i class="bi bi-file-earmark-code"></i> Exemplo com Ponto e Vírgula</h6>
             </div>
             <div class="card-body">
-                <p class="small text-muted">Exemplo do conteúdo do arquivo CSV:</p>
-                <pre class="bg-light p-3 rounded" style="font-size: 0.75rem;">Codigo SIGTAP,Descricao,Valor,Tipo Cirurgia,Especialidade
+                <p class="small text-muted">Formato Excel/Google Sheets (ponto e vírgula):</p>
+                <pre class="bg-light p-3 rounded" style="font-size: 0.70rem;">Codigo SIGTAP;Descricao;Valor;Tipo Cirurgia;Especialidade
+04.07.01.012-0;Apendicectomia;;CMA;
+04.08.04.015-6;Cesariana;2000.00;CMA;Obstetricia
+04.03.02.008-1;Sutura simples;;cma;
+04.12.01.005-3;Drenagem;250.00;cma;Cirurgia Geral</pre>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-file-earmark-code"></i> Exemplo com Vírgula</h6>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted">Formato programador/editor texto (vírgula):</p>
+                <pre class="bg-light p-3 rounded" style="font-size: 0.70rem;">Codigo SIGTAP,Descricao,Valor,Tipo Cirurgia,Especialidade
 04.07.01.012-0,Apendicectomia,1500.00,CMA,Cirurgia Geral
 04.08.04.015-6,Cesariana,2000.00,CMA,Obstetricia
 04.03.02.008-1,Sutura simples,300.00,cma,Cirurgia Geral
-04.12.01.005-3,Drenagem de abscesso,250.00,cma,Cirurgia Geral</pre>
+04.12.01.005-3,Drenagem,250.00,cma,Cirurgia Geral</pre>
                 
                 <div class="alert alert-info mt-3">
                     <small>
-                        <i class="bi bi-download"></i> Você pode criar o arquivo em qualquer planilha (Excel, Google Sheets) e salvar como CSV UTF-8.
+                        <i class="bi bi-lightbulb"></i> <strong>Dica:</strong> Ao salvar do Excel, escolha "CSV UTF-8 (Delimitado por vírgula)" ou simplesmente "CSV".
                     </small>
                 </div>
             </div>
