@@ -54,10 +54,15 @@ class Usuario(AbstractUser):
     )
     
     drt = models.CharField(
-        'DRT',
+        'DRT/Matrícula',
         max_length=20,
         blank=True,
-        null=True
+        null=True,
+        validators=[RegexValidator(
+            regex=r'^\d+$',
+            message='DRT/Matrícula deve conter apenas números'
+        )],
+        help_text='Apenas números'
     )
     
     tier = models.IntegerField(

@@ -51,10 +51,16 @@ class TrocaSenhaForm(PasswordChangeForm):
 
 class UsuarioForm(forms.ModelForm):
     """Formulário para cadastro de usuários."""
-    senha = forms.CharField(
-        label='Senha Inicial',
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
-        help_text='Esta será a senha inicial. O usuário deverá alterá-la no primeiro acesso.'
+    username_display = forms.CharField(
+        label='Username (gerado automaticamente)',
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'readonly': 'readonly',
+            'id': 'username_display',
+            'placeholder': 'Será gerado após digitar o e-mail'
+        }),
+        help_text='O username será a parte do e-mail antes do @'
     )
     
     class Meta:
@@ -62,12 +68,18 @@ class UsuarioForm(forms.ModelForm):
         fields = ['nome_completo', 'email', 'cpf', 'drt', 'tier']
         widgets = {
             'nome_completo': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'id': 'email_field'
+            }),
             'cpf': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': '000.000.000-00'
             }),
-            'drt': forms.TextInput(attrs={'class': 'form-control'}),
+            'drt': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Apenas números'
+            }),
             'tier': forms.Select(attrs={'class': 'form-select'}),
         }
     
@@ -77,11 +89,18 @@ class UsuarioForm(forms.ModelForm):
             raise ValidationError('Já existe um usuário com este e-mail.')
         return email
     
+    def clean_drt(self):
+        drt = self.cleaned_data.get('drt')
+        if drt and not drt.isdigit():
+            raise ValidationError('DRT/Matrícula deve conter apenas números.')
+        return drt
+    
     def save(self, commit=True):
         usuario = super().save(commit=False)
         # Gera o username a partir do email
         usuario.username = self.cleaned_data['email'].split('@')[0]
-        usuario.set_password(self.cleaned_data['senha'])
+        # Define a senha padrão
+        usuario.set_password('ame-control')
         usuario.primeiro_acesso = True
         if commit:
             usuario.save()
