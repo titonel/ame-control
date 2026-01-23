@@ -27,7 +27,7 @@
                             <li><code>Codigo SIGTAP</code> - Código do procedimento</li>
                             <li><code>Descricao</code> - Descrição do procedimento</li>
                             <li><code>Valor</code> - Valor em reais (usar ponto como separador decimal)</li>
-                            <li><code>Tipo Cirurgia</code> - ELETIVA, URGENCIA, EMERGENCIA ou AMBULATORIAL</li>
+                            <li><code>Tipo Cirurgia</code> - <strong>CMA</strong> (Cirurgias Maiores) ou <strong>cma</strong> (Cirurgias menores)</li>
                             <li><code>Especialidade</code> - Nome da especialidade</li>
                         </ul>
                     </div>
@@ -52,6 +52,7 @@
                         <i class="bi bi-exclamation-triangle"></i> <strong>Importante:</strong>
                         <ul class="mb-0 mt-2">
                             <li>O arquivo deve estar codificado em <strong>UTF-8</strong></li>
+                            <li>Tipos válidos: <strong>CMA</strong> ou <strong>cma</strong></li>
                             <li>Cirurgias com código SIGTAP já existentes serão <strong>atualizadas</strong></li>
                             <li>Linhas com erros serão ignoradas e reportadas ao final</li>
                         </ul>
@@ -81,9 +82,10 @@
             <div class="card-body">
                 <p class="small text-muted">Exemplo do conteúdo do arquivo CSV:</p>
                 <pre class="bg-light p-3 rounded" style="font-size: 0.75rem;">Codigo SIGTAP,Descricao,Valor,Tipo Cirurgia,Especialidade
-04.07.01.012-0,Apendicectomia,1500.00,ELETIVA,Cirurgia Geral
-04.08.04.015-6,Cesariana,2000.00,URGENCIA,Obstetricia
-04.03.02.008-1,Colecistectomia,1800.00,ELETIVA,Cirurgia Geral</pre>
+04.07.01.012-0,Apendicectomia,1500.00,CMA,Cirurgia Geral
+04.08.04.015-6,Cesariana,2000.00,CMA,Obstetricia
+04.03.02.008-1,Sutura simples,300.00,cma,Cirurgia Geral
+04.12.01.005-3,Drenagem de abscesso,250.00,cma,Cirurgia Geral</pre>
                 
                 <div class="alert alert-info mt-3">
                     <small>
@@ -95,12 +97,19 @@
         
         <div class="card mt-3">
             <div class="card-header">
-                <h6 class="mb-0"><i class="bi bi-shield-check"></i> Segurança</h6>
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Tipos de Cirurgia</h6>
             </div>
             <div class="card-body">
-                <small class="text-muted">
-                    <i class="bi bi-lock"></i> O upload é validado e os dados são processados de forma segura.
-                </small>
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <span class="badge bg-danger">CMA</span> - Cirurgias Maiores
+                        <br><small class="text-muted">Procedimentos de alta complexidade</small>
+                    </li>
+                    <li>
+                        <span class="badge bg-warning">cma</span> - Cirurgias menores
+                        <br><small class="text-muted">Procedimentos de baixa complexidade</small>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

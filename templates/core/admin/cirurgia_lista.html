@@ -41,12 +41,10 @@
                         <td><strong>{{ cirurgia.descricao|truncatewords:10 }}</strong></td>
                         <td>{{ cirurgia.especialidade }}</td>
                         <td>
-                            {% if cirurgia.tipo_cirurgia == 'ELETIVA' %}
-                                <span class="badge bg-info">Eletiva</span>
-                            {% elif cirurgia.tipo_cirurgia == 'URGENCIA' %}
-                                <span class="badge bg-warning">Urgência</span>
-                            {% elif cirurgia.tipo_cirurgia == 'EMERGENCIA' %}
-                                <span class="badge bg-danger">Emergência</span>
+                            {% if cirurgia.tipo_cirurgia == 'CMA' %}
+                                <span class="badge bg-danger">CMA - Maiores</span>
+                            {% elif cirurgia.tipo_cirurgia == 'cma' %}
+                                <span class="badge bg-warning">cma - Menores</span>
                             {% else %}
                                 <span class="badge bg-secondary">{{ cirurgia.get_tipo_cirurgia_display }}</span>
                             {% endif %}
