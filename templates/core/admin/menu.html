@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin - AME Control{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-shield-lock"></i> Área Administrativa</h2>
+        <p class="text-muted">Gerenciamento de dados estratégicos da unidade</p>
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> 
+            <strong>Acesso Restrito:</strong> Esta área é exclusiva para administradores (Tier 5)
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    {# Card Cirurgias #}
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm hover-card">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-heart-pulse-fill" style="font-size: 4rem; color: var(--primary-color);"></i>
+                </div>
+                <h4 class="card-title">Cirurgias</h4>
+                <p class="card-text text-muted">Gerenciamento de procedimentos cirúrgicos e suas tabelas</p>
+                <hr>
+                <div class="mb-3">
+                    <span class="badge bg-primary fs-5">{{ total_cirurgias }}</span>
+                    <p class="small text-muted mb-0">cirurgias ativas</p>
+                </div>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'cirurgia_lista' %}" class="btn btn-primary">
+                        <i class="bi bi-list-ul"></i> Gerenciar Cirurgias
+                    </a>
+                    <a href="{% url 'cirurgia_criar' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-plus-circle"></i> Nova Cirurgia
+                    </a>
+                    <a href="{% url 'cirurgia_upload_csv' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-upload"></i> Importar CSV
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {# Card Exames #}
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm hover-card">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-clipboard2-pulse-fill" style="font-size: 4rem; color: var(--secondary-color);"></i>
+                </div>
+                <h4 class="card-title">Exames</h4>
+                <p class="card-text text-muted">Gerenciamento de exames laboratoriais e de imagem</p>
+                <hr>
+                <div class="mb-3">
+                    <span class="badge bg-secondary fs-5">{{ total_exames }}</span>
+                    <p class="small text-muted mb-0">exames ativos</p>
+                </div>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'exame_lista' %}" class="btn btn-secondary">
+                        <i class="bi bi-list-ul"></i> Gerenciar Exames
+                    </a>
+                    <button class="btn btn-outline-secondary" disabled>
+                        <i class="bi bi-plus-circle"></i> Novo Exame
+                    </button>
+                    <button class="btn btn-outline-secondary" disabled>
+                        <i class="bi bi-upload"></i> Importar CSV
+                    </button>
+                </div>
+                <small class="text-muted mt-2 d-block">Em desenvolvimento</small>
+            </div>
+        </div>
+    </div>
+    
+    {# Card Serviços Médicos #}
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm hover-card">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-hospital-fill" style="font-size: 4rem; color: var(--success-color);"></i>
+                </div>
+                <h4 class="card-title">Serviços Médicos</h4>
+                <p class="card-text text-muted">Gerenciamento de consultas e serviços</p>
+                <hr>
+                <div class="mb-3">
+                    <span class="badge bg-success fs-5">{{ total_servicos }}</span>
+                    <p class="small text-muted mb-0">serviços ativos</p>
+                </div>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'servico_lista' %}" class="btn btn-success">
+                        <i class="bi bi-list-ul"></i> Gerenciar Serviços
+                    </a>
+                    <button class="btn btn-outline-success" disabled>
+                        <i class="bi bi-plus-circle"></i> Novo Serviço
+                    </button>
+                    <button class="btn btn-outline-success" disabled>
+                        <i class="bi bi-upload"></i> Importar CSV
+                    </button>
+                </div>
+                <small class="text-muted mt-2 d-block">Em desenvolvimento</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informações sobre SIGTAP</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-2">
+                    <strong>SIGTAP</strong> (Sistema de Gerenciamento da Tabela de Procedimentos, Medicamentos e OPM do SUS) é a tabela oficial do Ministério da Saúde que contém:
+                </p>
+                <ul>
+                    <li>Códigos e descrições de procedimentos médicos</li>
+                    <li>Valores de referência para procedimentos</li>
+                    <li>Classificação por especialidade e complexidade</li>
+                </ul>
+                <div class="alert alert-warning mt-3">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>API SIGTAP:</strong> A integração com API oficial do SIGTAP está em desenvolvimento. 
+                    Por enquanto, utilize o cadastro manual ou importação via CSV.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar ao Dashboard
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.hover-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.card-body i[style*="font-size: 4rem"] {
+    display: block;
+    margin: 0 auto;
+}
+</style>
+{% endblock %}
