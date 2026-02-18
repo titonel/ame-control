@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}Importar Planilha - Produção - Farol{% endblock %}
+{% block title %}Importar Arquivo - Produção - Farol{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
     <div class="col-12">
-        <h2><i class="bi bi-file-earmark-arrow-up"></i> Importar Planilha de Produção</h2>
-        <p class="text-muted">Selecione o arquivo Excel com os dados mensais de produção</p>
+        <h2><i class="bi bi-file-earmark-arrow-up"></i> Importar Arquivo de Produção</h2>
+        <p class="text-muted">Selecione o arquivo com os dados mensais de produção (.xlsx, .xls ou .csv)</p>
     </div>
 </div>
 
@@ -18,7 +18,7 @@
                     {% csrf_token %}
                     <div class="mb-4">
                         <label for="{{ form.arquivo.id_for_label }}" class="form-label fw-semibold">
-                            <i class="bi bi-file-earmark-excel"></i> {{ form.arquivo.label }}
+                            <i class="bi bi-file-earmark-spreadsheet"></i> {{ form.arquivo.label }}
                         </label>
                         {{ form.arquivo }}
                         {% if form.arquivo.help_text %}
@@ -48,11 +48,15 @@
                 <h5 class="mb-0"><i class="bi bi-info-circle"></i> Estrutura esperada do arquivo</h5>
             </div>
             <div class="card-body">
+                <div class="alert alert-info py-2 mb-3">
+                    <i class="bi bi-file-earmark-spreadsheet"></i>
+                    <strong>Formatos aceitos:</strong> .xlsx &nbsp;·&nbsp; .xls &nbsp;·&nbsp; .csv (UTF-8)
+                </div>
                 <ul class="list-unstyled mb-0">
                     <li class="mb-2">
                         <i class="bi bi-table text-primary"></i>
                         <strong>Célula F3:</strong> Mês e ano de referência<br>
-                        <small class="text-muted ms-4">Ex: Janeiro/2025 ou 01/2025</small>
+                        <small class="text-muted ms-4">Ex: <em>Janeiro de 2026</em>, Janeiro/2026 ou 01/2026</small>
                     </li>
                     <li class="mb-2">
                         <i class="bi bi-layout-text-sidebar text-primary"></i>

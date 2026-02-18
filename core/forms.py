@@ -345,11 +345,11 @@ class ServicoMedicoForm(forms.ModelForm):
 class ProducaoUploadForm(forms.Form):
     """Formulário para upload de planilha de produção mensal."""
     arquivo = forms.FileField(
-        label='Planilha de Produção',
-        help_text='Arquivo Excel (.xlsx ou .xls) com os dados mensais de produção',
+        label='Arquivo de Produção',
+        help_text='Formatos aceitos: .xlsx, .xls ou .csv (UTF-8)',
         widget=forms.FileInput(attrs={
             'class': 'form-control',
-            'accept': '.xlsx,.xls'
+            'accept': '.xlsx,.xls,.csv'
         })
     )
 
@@ -357,6 +357,7 @@ class ProducaoUploadForm(forms.Form):
         arquivo = self.cleaned_data.get('arquivo')
         if arquivo:
             nome = arquivo.name.lower()
-            if not (nome.endswith('.xlsx') or nome.endswith('.xls')):
-                raise ValidationError('O arquivo deve ser no formato .xlsx ou .xls.')
+            if not (nome.endswith('.xlsx') or nome.endswith('.xls') or nome.endswith('.csv')):
+                raise ValidationError('O arquivo deve ser no formato .xlsx, .xls ou .csv.')
+        return arquivo
         return arquivo

@@ -728,6 +728,73 @@ def _parse_html_as_sheet(html_content):
     return mes_ano, registros
 
 
+def _parse_csv(arquivo):
+    """Lê arquivo .csv UTF-8 e retorna (mes_ano, lista_de_registros)."""
+    content = arquivo.read()
+
+    # Tenta decodificar em UTF-8 (com ou sem BOM), latin-1 e cp1252
+    text = None
+    for enc in ('utf-8-sig', 'utf-8', 'latin-1', 'cp1252'):
+        try:
+            text = content.decode(enc)
+            break
+        except UnicodeDecodeError:
+            continue
+    if text is None:
+        raise ValueError("Não foi possível decodificar o arquivo CSV. Salve em formato UTF-8 e tente novamente.")
+
+    # Detecta delimitador
+    sample = text[:2048]
+    try:
+        dialect = csv.Sniffer().sniff(sample, delimiters=',;\t')
+        delimiter = dialect.delimiter
+    except csv.Error:
+        delimiter = ';' if text.count(';') >= text.count(',') else ','
+
+    rows = list(csv.reader(io.StringIO(text), delimiter=delimiter))
+
+    if not rows:
+        raise ValueError("Arquivo CSV vazio.")
+
+    # Célula F3 = linha índice 2, coluna índice 5
+    cell_f3 = ''
+    if len(rows) >= 3 and len(rows[2]) >= 6:
+        cell_f3 = rows[2][5].strip()
+    if not cell_f3:
+        raise ValueError(
+            "Célula F3 (linha 3, coluna F) não encontrada ou vazia. "
+            "Verifique se o delimitador do CSV corresponde à estrutura esperada."
+        )
+
+    mes_ano = _parse_mes_ano(cell_f3)
+
+    registros = []
+    for row in rows[7:]:  # dados a partir da linha 8 (índice 7)
+        while len(row) < 13:
+            row.append('')
+        if all(not v.strip() for v in row):
+            continue
+        especialidade = row[0].strip()
+        if not especialidade:
+            continue
+        registros.append({
+            'especialidade': especialidade,
+            'vagas_ofertadas': _to_int(row[1]),
+            'total_agendamentos': _to_int(row[2]),
+            'perc_agendamentos': _to_decimal_str(row[3]),
+            'agendamentos_cota': _to_int(row[4]),
+            'perc_cota': _to_decimal_str(row[5]),
+            'vagas_bolsao': _to_int(row[6]),
+            'perc_bolsao': _to_decimal_str(row[7]),
+            'vagas_nao_distribuidas': _to_int(row[8]),
+            'perc_nao_distribuidas': _to_decimal_str(row[9]),
+            'vagas_extras': _to_int(row[10]),
+            'perc_extras': _to_decimal_str(row[11]),
+            'perc_desperdicadas': _to_decimal_str(row[12]),
+        })
+    return mes_ano, registros
+
+
 def _parse_xls(arquivo):
     """Lê arquivo .xls (ou HTML disfarçado de XLS) e retorna (mes_ano, lista_de_registros)."""
     import xlrd
@@ -813,6 +880,8 @@ def producao_upload_view(request):
             try:
                 if nome.endswith('.xlsx'):
                     mes_ano, registros = _parse_xlsx(arquivo)
+                elif nome.endswith('.csv'):
+                    mes_ano, registros = _parse_csv(arquivo)
                 else:
                     mes_ano, registros = _parse_xls(arquivo)
 
