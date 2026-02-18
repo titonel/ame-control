@@ -553,14 +553,26 @@ def _parse_mes_ano(cell_value):
 
     value = str(cell_value).strip()
 
+    # MM/AAAA ou MM-AAAA
     m = re.match(r'^(\d{1,2})[/\-](\d{4})$', value)
     if m:
         return date(int(m.group(2)), int(m.group(1)), 1)
 
+    # AAAA/MM ou AAAA-MM
     m = re.match(r'^(\d{4})[/\-](\d{1,2})$', value)
     if m:
         return date(int(m.group(1)), int(m.group(2)), 1)
 
+    # "Mês de Ano" (ex: "Janeiro de 2026")
+    m = re.match(r'^([A-Za-zÀ-ÿ]+)\s+de\s+(\d{4})$', value, re.IGNORECASE)
+    if m:
+        mes_str = m.group(1).lower()
+        mes_str = mes_str.translate(str.maketrans('áéíóúâêîôûãõç', 'aeiouaeiouaoc'))
+        mes = _MESES_PT.get(mes_str)
+        if mes:
+            return date(int(m.group(2)), mes, 1)
+
+    # "Mês/Ano" ou "Mês Ano" (ex: "Janeiro/2026" ou "Janeiro 2026")
     m = re.match(r'^([A-Za-zÀ-ÿ]+)[/ ](\d{4})$', value)
     if m:
         mes_str = m.group(1).lower()
@@ -571,7 +583,7 @@ def _parse_mes_ano(cell_value):
 
     raise ValueError(
         f"Não foi possível interpretar a data '{cell_value}' da célula F3. "
-        "Use formatos como: MM/AAAA, Janeiro/AAAA ou Janeiro AAAA."
+        "Formatos aceitos: 'Janeiro de 2026', 'Janeiro/2026', 'Janeiro 2026' ou '01/2026'."
     )
 
 
@@ -629,44 +641,154 @@ def _parse_xlsx(arquivo):
     return mes_ano, registros
 
 
-def _parse_xls(arquivo):
-    """Lê arquivo .xls e retorna (mes_ano, lista_de_registros)."""
-    import xlrd
-    content = arquivo.read()
-    wb = xlrd.open_workbook(file_contents=content)
-    ws = wb.sheet_by_index(0)
+class _HTMLTableParser:
+    """Parser simples para tabelas HTML (usado em XLS exportados como HTML)."""
 
-    cell_f3_raw = ws.cell(2, 5)
-    if cell_f3_raw.ctype == xlrd.XL_CELL_DATE:
-        dt = xlrd.xldate_as_tuple(cell_f3_raw.value, wb.datemode)
-        mes_ano = date(dt[0], dt[1], 1)
-    else:
-        mes_ano = _parse_mes_ano(cell_f3_raw.value)
+    def __init__(self):
+        self.rows = []
+        self._current_row = None
+        self._current_cell = None
+        self._in_cell = False
+
+    def feed(self, html):
+        from html.parser import HTMLParser
+
+        outer = self
+
+        class _Inner(HTMLParser):
+            def handle_starttag(self_, tag, attrs):
+                tag = tag.lower()
+                if tag == 'tr':
+                    outer._current_row = []
+                elif tag in ('td', 'th'):
+                    outer._current_cell = []
+                    outer._in_cell = True
+
+            def handle_endtag(self_, tag):
+                tag = tag.lower()
+                if tag == 'tr':
+                    if outer._current_row is not None:
+                        outer.rows.append(outer._current_row)
+                        outer._current_row = None
+                elif tag in ('td', 'th'):
+                    if outer._current_row is not None and outer._current_cell is not None:
+                        outer._current_row.append(''.join(outer._current_cell).strip())
+                    outer._current_cell = None
+                    outer._in_cell = False
+
+            def handle_data(self_, data):
+                if outer._in_cell and outer._current_cell is not None:
+                    outer._current_cell.append(data)
+
+        _Inner().feed(html)
+
+
+def _parse_html_as_sheet(html_content):
+    """Extrai (mes_ano, registros) de planilha exportada como HTML."""
+    parser = _HTMLTableParser()
+    parser.feed(html_content)
+    rows = parser.rows
+
+    if not rows:
+        raise ValueError("Nenhuma tabela encontrada no arquivo.")
+
+    # Célula F3 → índice de linha 2, índice de coluna 5
+    cell_f3 = ''
+    if len(rows) >= 3 and len(rows[2]) >= 6:
+        cell_f3 = rows[2][5]
+    if not cell_f3:
+        raise ValueError("Célula F3 não encontrada ou vazia.")
+
+    mes_ano = _parse_mes_ano(cell_f3)
 
     registros = []
-    for row_idx in range(7, ws.nrows):
-        vals = [ws.cell(row_idx, c).value for c in range(13)]
-        if all(v == '' or v is None for v in vals):
+    for row in rows[7:]:  # dados a partir da linha 8 (índice 7)
+        while len(row) < 13:
+            row.append('')
+        if all(not v.strip() for v in row):
             continue
-        especialidade = vals[0]
-        if not especialidade or str(especialidade).strip() == '':
+        especialidade = row[0].strip()
+        if not especialidade:
             continue
         registros.append({
-            'especialidade': str(especialidade).strip(),
-            'vagas_ofertadas': _to_int(vals[1]),
-            'total_agendamentos': _to_int(vals[2]),
-            'perc_agendamentos': _to_decimal_str(vals[3]),
-            'agendamentos_cota': _to_int(vals[4]),
-            'perc_cota': _to_decimal_str(vals[5]),
-            'vagas_bolsao': _to_int(vals[6]),
-            'perc_bolsao': _to_decimal_str(vals[7]),
-            'vagas_nao_distribuidas': _to_int(vals[8]),
-            'perc_nao_distribuidas': _to_decimal_str(vals[9]),
-            'vagas_extras': _to_int(vals[10]),
-            'perc_extras': _to_decimal_str(vals[11]),
-            'perc_desperdicadas': _to_decimal_str(vals[12]),
+            'especialidade': especialidade,
+            'vagas_ofertadas': _to_int(row[1]),
+            'total_agendamentos': _to_int(row[2]),
+            'perc_agendamentos': _to_decimal_str(row[3]),
+            'agendamentos_cota': _to_int(row[4]),
+            'perc_cota': _to_decimal_str(row[5]),
+            'vagas_bolsao': _to_int(row[6]),
+            'perc_bolsao': _to_decimal_str(row[7]),
+            'vagas_nao_distribuidas': _to_int(row[8]),
+            'perc_nao_distribuidas': _to_decimal_str(row[9]),
+            'vagas_extras': _to_int(row[10]),
+            'perc_extras': _to_decimal_str(row[11]),
+            'perc_desperdicadas': _to_decimal_str(row[12]),
         })
     return mes_ano, registros
+
+
+def _parse_xls(arquivo):
+    """Lê arquivo .xls (ou HTML disfarçado de XLS) e retorna (mes_ano, lista_de_registros)."""
+    import xlrd
+    content = arquivo.read()
+
+    try:
+        wb = xlrd.open_workbook(file_contents=content)
+        ws = wb.sheet_by_index(0)
+
+        cell_f3_raw = ws.cell(2, 5)
+        if cell_f3_raw.ctype == xlrd.XL_CELL_DATE:
+            dt = xlrd.xldate_as_tuple(cell_f3_raw.value, wb.datemode)
+            mes_ano = date(dt[0], dt[1], 1)
+        else:
+            mes_ano = _parse_mes_ano(cell_f3_raw.value)
+
+        registros = []
+        for row_idx in range(7, ws.nrows):
+            vals = [ws.cell(row_idx, c).value for c in range(13)]
+            if all(v == '' or v is None for v in vals):
+                continue
+            especialidade = vals[0]
+            if not especialidade or str(especialidade).strip() == '':
+                continue
+            registros.append({
+                'especialidade': str(especialidade).strip(),
+                'vagas_ofertadas': _to_int(vals[1]),
+                'total_agendamentos': _to_int(vals[2]),
+                'perc_agendamentos': _to_decimal_str(vals[3]),
+                'agendamentos_cota': _to_int(vals[4]),
+                'perc_cota': _to_decimal_str(vals[5]),
+                'vagas_bolsao': _to_int(vals[6]),
+                'perc_bolsao': _to_decimal_str(vals[7]),
+                'vagas_nao_distribuidas': _to_int(vals[8]),
+                'perc_nao_distribuidas': _to_decimal_str(vals[9]),
+                'vagas_extras': _to_int(vals[10]),
+                'perc_extras': _to_decimal_str(vals[11]),
+                'perc_desperdicadas': _to_decimal_str(vals[12]),
+            })
+        return mes_ano, registros
+
+    except Exception:
+        # Arquivo provavelmente é HTML exportado como XLS (padrão de sistemas web)
+        for enc in ('utf-8', 'latin-1', 'cp1252'):
+            try:
+                html_text = content.decode(enc)
+                break
+            except UnicodeDecodeError:
+                continue
+        else:
+            raise ValueError(
+                "Formato de arquivo não suportado. Salve como .xlsx no Excel e tente novamente."
+            )
+
+        lower = html_text.lower()
+        if '<table' not in lower and '<html' not in lower:
+            raise ValueError(
+                "Formato de arquivo não reconhecido. Salve como .xlsx no Excel e tente novamente."
+            )
+
+        return _parse_html_as_sheet(html_text)
 
 
 @login_required
